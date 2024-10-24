@@ -61,7 +61,7 @@ The plugin populates the meta 'name' attribute alongside the 'property' attribut
 
 ## Changelog
 
-Project maintained on github at [willnorris/wordpress-opengraph](https://github.com/willnorris/wordpress-opengraph).
+Project maintained on github at [pfefferle/wordpress-opengraph](https://github.com/pfefferle/wordpress-opengraph).
 
 ### version 1.12.1 (Jul 15, 2024)
  - fix fediverse account normalization
