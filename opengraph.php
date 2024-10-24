@@ -3,8 +3,8 @@
  * Plugin Name: Open Graph
  * Plugin URI: https://wordpress.org/plugins/opengraph
  * Description: Adds Open Graph metadata to your pages
- * Author: Will Norris
- * Author URI: https://willnorris.com/
+ * Author: Will Norris & Matthias Pfefferle
+ * Author URI: https://github.com/pfefferle/wordpress-opengraph
  * Version: 1.12.1
  * License: Apache License, Version 2.0
  * License URI: http://www.apache.org/licenses/LICENSE-2.0.html
