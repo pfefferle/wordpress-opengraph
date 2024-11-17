@@ -4,7 +4,7 @@
 - Tags: social, opengraph, ogp, facebook
 - Requires at least: 2.3
 - Tested up to: 6.7
-- Stable tag: 1.12.1
+- Stable tag: 1.12.2
 - License: Apache License, Version 2.0
 - License URI: https://www.apache.org/licenses/LICENSE-2.0.html
 
@@ -62,6 +62,9 @@ The plugin populates the meta 'name' attribute alongside the 'property' attribut
 ## Changelog
 
 Project maintained on github at [pfefferle/wordpress-opengraph](https://github.com/pfefferle/wordpress-opengraph).
+
+### version 1.12.2 (Nov 17, 2024)
+ - optimized readme and updated dependencies
 
 ### version 1.12.1 (Jul 15, 2024)
  - fix fediverse account normalization
