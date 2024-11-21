@@ -1,0 +1,28 @@
+{
+    "name": "pfefferle/wordpress-opengraph",
+    "description": "Adds Open Graph metadata to your posts and pages so that they look great when shared on sites like Facebook and Twitter.",
+    "type": "wordpress-plugin",
+    "license": "Apache License, Version 2.0",
+    "require": {
+        "php": ">=7.0",
+        "composer/installers": "^1.0 || ^2.0"
+    },
+    "require-dev": {
+        "phpcompatibility/php-compatibility": "*",
+        "phpcompatibility/phpcompatibility-wp": "*",
+        "squizlabs/php_codesniffer": "3.*",
+        "wp-coding-standards/wpcs": "dev-develop",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
+        "sirbrillig/phpcs-variable-analysis": "^2.11",
+        "phpcsstandards/phpcsextra": "^1.1.0"
+    },
+    "config": {
+        "allow-plugins": true
+    },
+    "allow-plugins": {
+        "composer/installers": true
+    },
+	"extra": {
+        "installer-name": "opengraph"
+    }
+}

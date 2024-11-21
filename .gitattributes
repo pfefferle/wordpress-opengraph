@@ -4,5 +4,6 @@
 .gitattributes export-ignore
 .wordpress-org export-ignore
 .editorconfig export-ignore
-phpcs.xml export-ignore
+composer.json export-ignore
 docker-compose.yml export-ignore
+phpcs.xml export-ignore

@@ -1,5 +1,33 @@
 <?xml version="1.0"?>
-<ruleset name="WordPress">
+<ruleset name="WordPress OpenGraph Standards">
 	<description>WordPress Coding Standard.</description>
-	<rule ref="WordPress-Core"/>
+	<file>.</file>
+
+	<exclude-pattern>*\.(inc|css|js|svg)</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*.asset.php</exclude-pattern>
+
+	<arg value="ps"/>
+	<arg name="basepath" value="."/><!-- Strip the file paths down to the relevant bit -->
+	<arg name="colors"/>
+	<arg name="parallel" value="50"/>
+
+	<rule ref="PHPCompatibility"/>
+	<config name="testVersion" value="7.0-"/>
+	<rule ref="PHPCompatibilityWP"/>
+	<config name="minimum_supported_wp_version" value="2.3"/>
+
+	<config name="text_domain" value="opengraph,default"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="VariableAnalysis"/>
+
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="opengraph" />
+			</property>
+		</properties>
+	</rule>
 </ruleset>

@@ -4,7 +4,7 @@
 - Tags: social, opengraph, ogp, facebook
 - Requires at least: 2.3
 - Tested up to: 6.7
-- Stable tag: 1.12.2
+- Stable tag: 2.0.0
 - License: Apache License, Version 2.0
 - License URI: https://www.apache.org/licenses/LICENSE-2.0.html
 
@@ -62,6 +62,13 @@ The plugin populates the meta 'name' attribute alongside the 'property' attribut
 ## Changelog
 
 Project maintained on github at [pfefferle/wordpress-opengraph](https://github.com/pfefferle/wordpress-opengraph).
+
+### 2.0.0 (Nov XX. 2024)
+
+ - complete rewrite of image handling
+ - added support for block images
+ - added parsing of HTML `<img>` tags
+ - improved WordPress Coding Standards compliance
 
 ### version 1.12.2 (Nov 17, 2024)
  - optimized readme and updated dependencies
