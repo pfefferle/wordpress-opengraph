@@ -278,14 +278,14 @@ function opengraph_default_image( $image = array() ) {
 
 	if ( is_attachment() && wp_attachment_is_image() ) {
 		$id      = get_queried_object_id();
-		$image[] = current( wp_get_attachment_image_src( $id, 'large' ) ?? array() );
+		$image[] = current( wp_get_attachment_image_src( $id, 'large' ) ?: array() ); // phpcs:ignore
 	} elseif ( is_singular() && ! is_attachment() ) {
 		$id = get_queried_object_id();
 
 		// List post thumbnail first if this post has one.
 		if ( function_exists( 'has_post_thumbnail' ) && has_post_thumbnail( $id ) ) {
 			$thumbnail_id = get_post_thumbnail_id( $id );
-			$image[]      = current( wp_get_attachment_image_src( $thumbnail_id, 'large' ) ?? array() );
+			$image[]      = current( wp_get_attachment_image_src( $thumbnail_id, 'large' ) ?: array() ); // phpcs:ignore
 		}
 	}
 
@@ -318,7 +318,7 @@ function opengraph_block_image( $image = array() ) {
 			'core/cover' === $block['blockName']
 		) {
 			$id      = $block['attrs']['id'];
-			$image[] = current( wp_get_attachment_image_src( $id, 'large' ) ?? array() );
+			$image[] = current( wp_get_attachment_image_src( $id, 'large' ) ?: array() ); // phpcs:ignore
 		}
 	}
 
@@ -391,7 +391,7 @@ function opengraph_parsed_image( $image = array() ) {
 		}
 
 		if ( 0 !== $img_id ) {
-			$image[] = current( wp_get_attachment_image_src( $img_id, 'large' ) ?? array() );
+			$image[] = current( wp_get_attachment_image_src( $img_id, 'large' ) ?: array() ); // phpcs:ignore
 		}
 	}
 
