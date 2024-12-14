@@ -313,6 +313,10 @@ function opengraph_block_image( $image = array() ) {
 	// Get the first image in the post content.
 	$blocks = parse_blocks( get_the_content( null, false ) );
 	foreach ( $blocks as $block ) {
+		if ( count( $image ) >= opengraph_max_images() ) {
+			break;
+		}
+
 		if (
 			'core/image' === $block['blockName'] ||
 			'core/cover' === $block['blockName']
@@ -435,6 +439,10 @@ function opengraph_attached_image( $image = array() ) {
 
 	// Get URLs for each image.
 	foreach ( $image_ids as $id ) {
+		if ( count( $image ) >= opengraph_max_images() ) {
+			break;
+		}
+
 		$thumbnail = wp_get_attachment_image_src( $id, 'large' );
 		if ( $thumbnail ) {
 			$image[] = $thumbnail[0];
