@@ -167,6 +167,7 @@ function opengraph_default_metadata() {
 	add_filter( 'opengraph_image', 'opengraph_parsed_image', 25 );
 	add_filter( 'opengraph_image', 'opengraph_attached_image', 25 );
 	add_filter( 'opengraph_image', 'opengraph_fallback_image', 35 );
+	add_filter( 'opengraph_image', 'opengraph_ensure_max_image', 999 );
 
 	add_filter( 'opengraph_description', 'opengraph_default_description', 5 );
 	add_filter( 'opengraph_locale', 'opengraph_default_locale', 5 );
@@ -498,6 +499,16 @@ function opengraph_fallback_image( $image = array() ) {
 	return array_unique( $image );
 }
 
+/**
+ * Ensure the image count does not exceed the maximum.
+ *
+ * @param array $image The current list of images.
+ *
+ * @return array The list of images.
+ */
+function opengraph_ensure_max_image( $image = array() ) {
+	return array_slice( $image, 0, opengraph_max_images() );
+}
 
 /**
  * Default audio property, using get_attached_media.
