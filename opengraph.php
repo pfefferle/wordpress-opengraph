@@ -321,6 +321,10 @@ function opengraph_block_image( $image = array() ) {
 			'core/image' === $block['blockName'] ||
 			'core/cover' === $block['blockName']
 		) {
+			if ( ! isset( $block['attrs']['id'] ) ) {
+				continue;
+			}
+
 			$id      = $block['attrs']['id'];
 			$image[] = current( wp_get_attachment_image_src( $id, 'large' ) ?: array() ); // phpcs:ignore
 		}
