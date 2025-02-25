@@ -5,7 +5,7 @@
  * Description: Adds Open Graph metadata to your pages
  * Author: Will Norris & Matthias Pfefferle
  * Author URI: https://github.com/pfefferle/wordpress-opengraph
- * Version: 2.0.1
+ * Version: 2.0.2
  * License: Apache License, Version 2.0
  * License URI: http://www.apache.org/licenses/LICENSE-2.0.html
  * Text Domain: opengraph
@@ -21,7 +21,8 @@ add_filter( 'jetpack_enable_open_graph', '__return_false' );
 
 // Disable strict mode by default.
 defined( 'OPENGRAPH_STRICT_MODE' ) || define( 'OPENGRAPH_STRICT_MODE', false );
-
+// Set the maximum number of images to include in Open Graph metadata.
+defined( 'OPENGRAPH_MAX_IMAGES' ) || define( 'OPENGRAPH_MAX_IMAGES', 3 );
 
 /**
  * Add Open Graph XML prefix to <html> element.
@@ -928,7 +929,7 @@ function opengraph_max_images() {
 	 *
 	 * @param int $max_images The maximum number of images to include.
 	 */
-	$max_images = apply_filters( 'opengraph_max_images', 3 );
+	$max_images = apply_filters( 'opengraph_max_images', OPENGRAPH_MAX_IMAGES );
 
 	// Max images can't be negative or zero.
 	if ( $max_images <= 0 ) {
