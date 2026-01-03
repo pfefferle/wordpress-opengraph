@@ -1,0 +1,14 @@
+{
+  "name": "wordpress-opengraph",
+  "description": "Adds Open Graph metadata to WordPress",
+  "author": "Matthias Pfefferle",
+  "license": "MIT",
+  "devDependencies": {
+    "@wordpress/env": "^10.0.0"
+  },
+  "scripts": {
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:destroy": "wp-env destroy"
+  }
+}
