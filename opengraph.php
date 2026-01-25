@@ -313,7 +313,7 @@ function opengraph_block_image( $image = array() ) {
 	}
 
 	// Get the first image in the post content.
-	$blocks = parse_blocks( get_the_content( null, false ) );
+	$blocks = parse_blocks( get_the_content( null, false, false ) );
 	foreach ( $blocks as $block ) {
 		if ( count( $image ) >= opengraph_max_images() ) {
 			break;
