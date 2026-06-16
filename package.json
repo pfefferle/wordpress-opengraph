@@ -4,7 +4,7 @@
   "author": "Matthias Pfefferle",
   "license": "MIT",
   "devDependencies": {
-    "@wordpress/env": "^10.0.0"
+    "@wordpress/env": "^11.8.1"
   },
   "scripts": {
     "env:start": "wp-env start",
