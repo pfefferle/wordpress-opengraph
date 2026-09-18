@@ -96,6 +96,48 @@ class Test_Opengraph extends Opengraph_TestCase {
 	}
 
 	/**
+	 * Test the description of a multipage post is taken from the current page.
+	 *
+	 * @see https://github.com/pfefferle/wordpress-opengraph/issues/9
+	 *
+	 * @covers ::opengraph_default_description
+	 * @covers ::opengraph_page_teaser
+	 */
+	public function test_description_from_multipage_content() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_content' => '<!-- wp:paragraph --><p>First page</p><!-- /wp:paragraph --><!-- wp:nextpage --><!--nextpage--><!-- /wp:nextpage --><!-- wp:paragraph --><p>Second page</p><!-- /wp:paragraph -->',
+				'post_excerpt' => '',
+			)
+		);
+
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+		$this->assertSame( 'First page', $metadata['og:description'] );
+
+		$metadata = $this->metadata_for( add_query_arg( 'page', 2, get_permalink( $post_id ) ) );
+		$this->assertSame( 'Second page', $metadata['og:description'] );
+	}
+
+	/**
+	 * Test the description is cut at the more tag.
+	 *
+	 * @covers ::opengraph_default_description
+	 * @covers ::opengraph_page_teaser
+	 */
+	public function test_description_from_teaser() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_content' => '<!-- wp:paragraph --><p>Teaser</p><!-- /wp:paragraph --><!-- wp:more --><!--more--><!-- /wp:more --><!-- wp:paragraph --><p>Rest</p><!-- /wp:paragraph -->',
+				'post_excerpt' => '',
+			)
+		);
+
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+
+		$this->assertSame( 'Teaser', $metadata['og:description'] );
+	}
+
+	/**
 	 * Test a password protected post exposes neither its content nor its images.
 	 *
 	 * @covers ::opengraph_default_description
