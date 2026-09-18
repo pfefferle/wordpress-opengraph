@@ -6,7 +6,7 @@
 - Tested up to: 7.1
 - Stable tag: 3.0.0
 - Requires PHP: 7.4
-- License: Apache License, 2.0
+- License: Apache License, Version 2.0
 - License URI: https://www.apache.org/licenses/LICENSE-2.0.html
 
 
