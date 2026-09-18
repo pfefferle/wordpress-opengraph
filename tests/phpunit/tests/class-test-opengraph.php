@@ -179,6 +179,43 @@ class Test_Opengraph extends Opengraph_TestCase {
 	}
 
 	/**
+	 * Test the Twitter card stays small for the custom logo.
+	 *
+	 * @covers ::twitter_default_card
+	 */
+	public function test_twitter_card_fallback_custom_logo() {
+		set_theme_mod( 'custom_logo', $this->create_image() );
+
+		$post_id  = self::factory()->post->create();
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+
+		remove_theme_mod( 'custom_logo' );
+
+		$this->assertCount( 1, $metadata['og:image'] );
+		$this->assertSame( 'summary', $metadata['twitter:card'] );
+	}
+
+	/**
+	 * Test the Twitter card stays small for random header images.
+	 *
+	 * @covers ::twitter_default_card
+	 */
+	public function test_twitter_card_fallback_random_header() {
+		foreach ( array( $this->create_image(), $this->create_image() ) as $header_id ) {
+			update_post_meta( $header_id, '_wp_attachment_is_custom_header', get_option( 'stylesheet' ) );
+		}
+		set_theme_mod( 'header_image', 'random-uploaded-image' );
+
+		$post_id  = self::factory()->post->create();
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+
+		remove_theme_mod( 'header_image' );
+
+		$this->assertCount( 2, $metadata['og:image'] );
+		$this->assertSame( 'summary', $metadata['twitter:card'] );
+	}
+
+	/**
 	 * Test the property filters receive the metadata collected so far.
 	 *
 	 * @covers ::opengraph_metadata
