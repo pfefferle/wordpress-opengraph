@@ -4,7 +4,7 @@
 - Tags: social, opengraph, ogp, facebook
 - Requires at least: 6.2
 - Tested up to: 7.1
-- Stable tag: 2.1.0
+- Stable tag: 3.0.0
 - Requires PHP: 7.4
 - License: Apache License, 2.0
 - License URI: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -64,7 +64,7 @@ The plugin populates the meta 'name' attribute alongside the 'property' attribut
 
 Project maintained on github at [pfefferle/wordpress-opengraph](https://github.com/pfefferle/wordpress-opengraph).
 
-### 2.1.0 (Sep 18, 2026)
+### 3.0.0 (Sep 18, 2026)
 
  - simpler image handling: one pass over the post content, catches gallery, media & text and nested block images
  - new `opengraph_image_sources` filter to add or remove image sources
@@ -73,7 +73,7 @@ Project maintained on github at [pfefferle/wordpress-opengraph](https://github.c
  - use the current page of a multipage post and the `<!--more-->` teaser for the description (#9)
  - fixed merging into an existing `prefix` attribute
  - fixed a fatal error with The Events Calendar (#39)
- - removed `opengraph_block_image`, `opengraph_parsed_image`, `opengraph_attached_image`, `opengraph_ensure_max_image` and `opengraph_site_supports_blocks`
+ - **breaking:** removed `opengraph_block_image`, `opengraph_parsed_image`, `opengraph_attached_image`, `opengraph_ensure_max_image` and `opengraph_site_supports_blocks` (and its filter), use the `opengraph_image_sources` filter instead
  - minimum WordPress version is now 6.2
  - added phpunit tests
 
