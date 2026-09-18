@@ -69,7 +69,7 @@ Project maintained on github at [pfefferle/wordpress-opengraph](https://github.c
  - simpler image handling: one pass over the post content, catches gallery, media & text and nested block images
  - new `opengraph_image_sources` filter to add or remove image sources
  - the property filters get the metadata collected so far as second argument
- - twitter card is `summary_large_image` whenever there is an `og:image`
+ - twitter card is `summary_large_image` whenever the post has an image, `summary` for the fallback images
  - use the current page of a multipage post and the `<!--more-->` teaser for the description (#9)
  - fixed merging into an existing `prefix` attribute
  - fixed a fatal error with The Events Calendar (#39)
