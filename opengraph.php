@@ -618,7 +618,7 @@ function opengraph_default_description( $description = '', $length = 55 ) {
 		} elseif ( ! empty( $post->post_excerpt ) ) {
 			$description = $post->post_excerpt;
 		} else {
-			$description = $post->post_content;
+			$description = opengraph_page_teaser( $post );
 		}
 	} elseif ( is_author() ) {
 		$id          = get_queried_object_id();
@@ -636,6 +636,27 @@ function opengraph_default_description( $description = '', $length = 55 ) {
 	$description = opengraph_trim_text( strip_shortcodes( $description ), $length );
 
 	return wp_strip_all_tags( $description );
+}
+
+
+/**
+ * Get the content of the current page of a post, cut at the `<!--more-->` tag.
+ *
+ * Splits the content at `<!--nextpage-->` the same way core does for
+ * `get_the_content()`, so every page of a multipage post gets its own
+ * description. If the page has a `<!--more-->` tag, only the teaser before
+ * it is returned.
+ *
+ * @param WP_Post $post The post.
+ *
+ * @return string The content.
+ */
+function opengraph_page_teaser( $post ) {
+	$elements = generate_postdata( $post );
+	$page     = min( max( 1, (int) $elements['page'] ), count( $elements['pages'] ) );
+	$content  = $elements['pages'][ $page - 1 ];
+
+	return get_extended( $content )['main'];
 }
 
 
@@ -660,7 +681,8 @@ function opengraph_default_locale( $locale = '' ) {
  *
  * Twitter takes the image from `og:image`, so the card type only depends on
  * whether a singular post has one: `summary_large_image` if it does,
- * `summary` otherwise.
+ * `summary` otherwise. Fallback images (site icon, logo, header) are not
+ * the post's own images and look better in a small card.
  *
  * @param string $card     The current card type.
  * @param array  $metadata The metadata collected so far, including `og:image`.
@@ -672,11 +694,15 @@ function twitter_default_card( $card = '', $metadata = array() ) {
 		return $card;
 	}
 
-	if ( is_singular() && ! empty( $metadata['og:image'] ) ) {
-		return 'summary_large_image';
+	if ( ! is_singular() || empty( $metadata['og:image'] ) ) {
+		return 'summary';
 	}
 
-	return 'summary';
+	if ( opengraph_fallback_image() === $metadata['og:image'] ) {
+		return 'summary';
+	}
+
+	return 'summary_large_image';
 }
 
 

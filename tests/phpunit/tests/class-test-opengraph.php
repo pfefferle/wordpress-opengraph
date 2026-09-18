@@ -96,6 +96,48 @@ class Test_Opengraph extends Opengraph_TestCase {
 	}
 
 	/**
+	 * Test the description of a multipage post is taken from the current page.
+	 *
+	 * @see https://github.com/pfefferle/wordpress-opengraph/issues/9
+	 *
+	 * @covers ::opengraph_default_description
+	 * @covers ::opengraph_page_teaser
+	 */
+	public function test_description_from_multipage_content() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_content' => '<!-- wp:paragraph --><p>First page</p><!-- /wp:paragraph --><!-- wp:nextpage --><!--nextpage--><!-- /wp:nextpage --><!-- wp:paragraph --><p>Second page</p><!-- /wp:paragraph -->',
+				'post_excerpt' => '',
+			)
+		);
+
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+		$this->assertSame( 'First page', $metadata['og:description'] );
+
+		$metadata = $this->metadata_for( add_query_arg( 'page', 2, get_permalink( $post_id ) ) );
+		$this->assertSame( 'Second page', $metadata['og:description'] );
+	}
+
+	/**
+	 * Test the description is cut at the more tag.
+	 *
+	 * @covers ::opengraph_default_description
+	 * @covers ::opengraph_page_teaser
+	 */
+	public function test_description_from_teaser() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_content' => '<!-- wp:paragraph --><p>Teaser</p><!-- /wp:paragraph --><!-- wp:more --><!--more--><!-- /wp:more --><!-- wp:paragraph --><p>Rest</p><!-- /wp:paragraph -->',
+				'post_excerpt' => '',
+			)
+		);
+
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+
+		$this->assertSame( 'Teaser', $metadata['og:description'] );
+	}
+
+	/**
 	 * Test a password protected post exposes neither its content nor its images.
 	 *
 	 * @covers ::opengraph_default_description
@@ -156,6 +198,63 @@ class Test_Opengraph extends Opengraph_TestCase {
 		set_post_thumbnail( $post_id, $this->create_image() );
 		$metadata = $this->metadata_for( get_permalink( $post_id ) );
 		$this->assertSame( 'summary_large_image', $metadata['twitter:card'] );
+	}
+
+	/**
+	 * Test the Twitter card stays small for fallback images.
+	 *
+	 * @covers ::twitter_default_card
+	 */
+	public function test_twitter_card_fallback_image() {
+		update_option( 'site_icon', $this->create_image() );
+
+		$post_id  = self::factory()->post->create();
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+		$this->assertSame( array( get_site_icon_url( 512 ) ), $metadata['og:image'] );
+		$this->assertSame( 'summary', $metadata['twitter:card'] );
+
+		set_post_thumbnail( $post_id, $this->create_image() );
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+		$this->assertSame( 'summary_large_image', $metadata['twitter:card'] );
+
+		delete_option( 'site_icon' );
+	}
+
+	/**
+	 * Test the Twitter card stays small for the custom logo.
+	 *
+	 * @covers ::twitter_default_card
+	 */
+	public function test_twitter_card_fallback_custom_logo() {
+		set_theme_mod( 'custom_logo', $this->create_image() );
+
+		$post_id  = self::factory()->post->create();
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+
+		remove_theme_mod( 'custom_logo' );
+
+		$this->assertCount( 1, $metadata['og:image'] );
+		$this->assertSame( 'summary', $metadata['twitter:card'] );
+	}
+
+	/**
+	 * Test the Twitter card stays small for random header images.
+	 *
+	 * @covers ::twitter_default_card
+	 */
+	public function test_twitter_card_fallback_random_header() {
+		foreach ( array( $this->create_image(), $this->create_image() ) as $header_id ) {
+			update_post_meta( $header_id, '_wp_attachment_is_custom_header', get_option( 'stylesheet' ) );
+		}
+		set_theme_mod( 'header_image', 'random-uploaded-image' );
+
+		$post_id  = self::factory()->post->create();
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+
+		remove_theme_mod( 'header_image' );
+
+		$this->assertCount( 2, $metadata['og:image'] );
+		$this->assertSame( 'summary', $metadata['twitter:card'] );
 	}
 
 	/**
