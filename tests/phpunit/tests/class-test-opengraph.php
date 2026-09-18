@@ -159,6 +159,26 @@ class Test_Opengraph extends Opengraph_TestCase {
 	}
 
 	/**
+	 * Test the Twitter card stays small for fallback images.
+	 *
+	 * @covers ::twitter_default_card
+	 */
+	public function test_twitter_card_fallback_image() {
+		update_option( 'site_icon', $this->create_image() );
+
+		$post_id  = self::factory()->post->create();
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+		$this->assertSame( array( get_site_icon_url( 512 ) ), $metadata['og:image'] );
+		$this->assertSame( 'summary', $metadata['twitter:card'] );
+
+		set_post_thumbnail( $post_id, $this->create_image() );
+		$metadata = $this->metadata_for( get_permalink( $post_id ) );
+		$this->assertSame( 'summary_large_image', $metadata['twitter:card'] );
+
+		delete_option( 'site_icon' );
+	}
+
+	/**
 	 * Test the property filters receive the metadata collected so far.
 	 *
 	 * @covers ::opengraph_metadata

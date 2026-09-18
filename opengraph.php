@@ -660,7 +660,8 @@ function opengraph_default_locale( $locale = '' ) {
  *
  * Twitter takes the image from `og:image`, so the card type only depends on
  * whether a singular post has one: `summary_large_image` if it does,
- * `summary` otherwise.
+ * `summary` otherwise. Fallback images (site icon, logo, header) are not
+ * the post's own images and look better in a small card.
  *
  * @param string $card     The current card type.
  * @param array  $metadata The metadata collected so far, including `og:image`.
@@ -672,11 +673,15 @@ function twitter_default_card( $card = '', $metadata = array() ) {
 		return $card;
 	}
 
-	if ( is_singular() && ! empty( $metadata['og:image'] ) ) {
-		return 'summary_large_image';
+	if ( ! is_singular() || empty( $metadata['og:image'] ) ) {
+		return 'summary';
 	}
 
-	return 'summary';
+	if ( opengraph_fallback_image() === $metadata['og:image'] ) {
+		return 'summary';
+	}
+
+	return 'summary_large_image';
 }
 
 
