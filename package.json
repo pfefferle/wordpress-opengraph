@@ -2,7 +2,7 @@
   "name": "wordpress-opengraph",
   "description": "Adds Open Graph metadata to WordPress",
   "author": "Matthias Pfefferle",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@wordpress/env": "^11.8.1"
   },

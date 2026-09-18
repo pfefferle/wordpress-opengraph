@@ -5,9 +5,9 @@
  * Description: Adds Open Graph metadata to your pages
  * Author: Will Norris & Matthias Pfefferle
  * Author URI: https://github.com/pfefferle/wordpress-opengraph
- * Version: 2.0.2
+ * Version: 3.0.0
  * License: Apache License, Version 2.0
- * License URI: http://www.apache.org/licenses/LICENSE-2.0.html
+ * License URI: https://www.apache.org/licenses/LICENSE-2.0.html
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Text Domain: opengraph
