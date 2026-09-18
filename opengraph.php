@@ -618,7 +618,7 @@ function opengraph_default_description( $description = '', $length = 55 ) {
 		} elseif ( ! empty( $post->post_excerpt ) ) {
 			$description = $post->post_excerpt;
 		} else {
-			$description = $post->post_content;
+			$description = opengraph_page_teaser( $post );
 		}
 	} elseif ( is_author() ) {
 		$id          = get_queried_object_id();
@@ -636,6 +636,27 @@ function opengraph_default_description( $description = '', $length = 55 ) {
 	$description = opengraph_trim_text( strip_shortcodes( $description ), $length );
 
 	return wp_strip_all_tags( $description );
+}
+
+
+/**
+ * Get the content of the current page of a post, cut at the `<!--more-->` tag.
+ *
+ * Splits the content at `<!--nextpage-->` the same way core does for
+ * `get_the_content()`, so every page of a multipage post gets its own
+ * description. If the page has a `<!--more-->` tag, only the teaser before
+ * it is returned.
+ *
+ * @param WP_Post $post The post.
+ *
+ * @return string The content.
+ */
+function opengraph_page_teaser( $post ) {
+	$elements = generate_postdata( $post );
+	$page     = min( max( 1, (int) $elements['page'] ), count( $elements['pages'] ) );
+	$content  = $elements['pages'][ $page - 1 ];
+
+	return get_extended( $content )['main'];
 }
 
 
