@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Open Graph
  * Plugin URI: https://wordpress.org/plugins/opengraph
- * Description: Adds Open Graph metadata to your pages
+ * Description: Adds Open Graph metadata to your posts and pages so that they look great when shared on sites like Facebook and Twitter.
  * Author: Will Norris & Matthias Pfefferle
  * Author URI: https://github.com/pfefferle/wordpress-opengraph
  * Version: 3.0.1
