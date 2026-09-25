@@ -10,7 +10,7 @@
 - License URI: https://www.apache.org/licenses/LICENSE-2.0.html
 
 
-Adds Open Graph metadata to your posts and pages so that they look great when shared on sites like Facebook and Twitter.
+Adds Open Graph metadata to your posts and pages so that they look great when shared on social networks.
 
 ## Description
 

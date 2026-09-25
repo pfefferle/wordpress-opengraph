@@ -1,6 +1,6 @@
 {
     "name": "pfefferle/wordpress-opengraph",
-    "description": "Adds Open Graph metadata to your posts and pages so that they look great when shared on sites like Facebook and Twitter.",
+    "description": "Adds Open Graph metadata to your posts and pages so that they look great when shared on social networks.",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "require": {
