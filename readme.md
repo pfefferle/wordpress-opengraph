@@ -1,7 +1,7 @@
 # Open Graph
 
 - Contributors: willnorris, pfefferle
-- Tags: open graph, opengraph, social, facebook, twitter
+- Tags: open graph, opengraph, social, fediverse, bluesky
 - Requires at least: 6.2
 - Tested up to: 7.1
 - Stable tag: 3.0.1
