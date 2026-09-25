@@ -1,6 +1,6 @@
 {
 	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
-	"landingPage": "/hello-world/",
+	"landingPage": "/open-graph/",
 	"steps": [
 		{
 			"step": "setSiteOptions",
@@ -12,7 +12,7 @@
 		},
 		{
 			"step": "installPlugin",
-			"pluginZipFile": {
+			"pluginData": {
 				"resource": "wordpress.org/plugins",
 				"slug": "opengraph"
 			},
@@ -24,6 +24,10 @@
 			"step": "login",
 			"username": "admin",
 			"password": "password"
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require_once '/wordpress/wp-load.php';\nwp_update_post(\n\tarray(\n\t\t'ID'           => 1,\n\t\t'post_title'   => 'How to check the Open Graph metadata',\n\t\t'post_name'    => 'open-graph',\n\t\t'post_excerpt' => 'The Open Graph plugin has no settings page. Open the source code of this page to see the metadata.',\n\t\t'post_content' => '<!-- wp:paragraph -->\n<p>The Open Graph plugin has no settings page. It works out of the box and adds Open Graph metadata to the <code>&lt;head&gt;</code> of your posts and pages.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>You can not see the metadata on the page itself. To check it, open the source code of this page and search for <code>og:</code>. You should find tags like <code>og:title</code>, <code>og:description</code>, <code>og:url</code> and <code>og:type</code>.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>In Playground the site runs inside a frame, so use right click and \"View Frame Source\" (Chrome) or \"This Frame\" → \"View Frame Source\" (Firefox). \"View Page Source\" only shows the Playground app itself.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Try to edit this post, change the title or add a featured image, and check the source again. The plugin uses the featured image (or the images in the post) for <code>og:image</code>.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>If you want to change the output, you can use the <code>opengraph_metadata</code> filter, or a filter per property like <code>opengraph_title</code> or <code>opengraph_image</code>.</p>\n<!-- /wp:paragraph -->',\n\t)\n);\nflush_rewrite_rules();\n"
 		}
 	]
 }
