@@ -14,15 +14,15 @@ Adds Open Graph metadata to your posts and pages so that they look great when sh
 
 ## Description
 
-The [Open Graph protocol][] enables any web page to become a rich object in a social graph.  Most notably, this allows for these pages to be used with Facebook's [Like Button][] and [Graph API][] as well as within Twitter posts.
+The [Open Graph protocol][] enables any web page to become a rich object in a social graph.  Most notably, this allows for these pages to be used with Facebook's [Share Button][] and [Graph API][] as well as within Twitter posts.
 
 The Open Graph plugin inserts the Open Graph metadata into WordPress posts and pages, and provides a simple extension mechanism for other plugins and themes to override this data, or to provide additional Open Graph data.
 
-This plugin does not directly add social plugins like the Facebook Like Button to your pages (though they're pretty simple to add).  It will however make your pages look great when shared using those kinds of tools.
+This plugin does not directly add social plugins like the Facebook Share Button to your pages (though they're pretty simple to add).  It will however make your pages look great when shared using those kinds of tools.
 
 [Open Graph Protocol]: https://ogp.me/
-[Like Button]: https://developers.facebook.com/docs/reference/plugins/like
-[Graph API]: https://developers.facebook.com/docs/reference/api/
+[Share Button]: https://developers.facebook.com/documentation/plugins/share-button
+[Graph API]: https://developers.facebook.com/docs/graph-api/
 
 
 ## Frequently Asked Questions
@@ -175,7 +175,7 @@ Project maintained on github at [pfefferle/wordpress-opengraph](https://github.c
  - basic twitter cards support (thanks to elroyjetson)
  - replace `$post->post_title` with `get_the_title()` (see #[17][] for details)
 
-[17]: https://github.com/willnorris/wordpress-opengraph/issues/17
+[17]: https://github.com/pfefferle/wordpress-opengraph/issues/17
 
 ### 1.5.1 (Nov 13, 2012)
  - fix duplicate opengraph markup when used with jetpack plugin (for real)
