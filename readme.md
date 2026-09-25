@@ -4,7 +4,7 @@
 - Tags: social, opengraph, ogp, facebook
 - Requires at least: 6.2
 - Tested up to: 7.1
-- Stable tag: 3.0.0
+- Stable tag: 3.0.1
 - Requires PHP: 7.4
 - License: Apache License, Version 2.0
 - License URI: https://www.apache.org/licenses/LICENSE-2.0.html
@@ -63,6 +63,10 @@ The plugin populates the meta 'name' attribute alongside the 'property' attribut
 ## Changelog
 
 Project maintained on github at [pfefferle/wordpress-opengraph](https://github.com/pfefferle/wordpress-opengraph).
+
+### 3.0.1 (Sep 25, 2026)
+
+ - fixed a fatal error on ClassicPress, which does not ship the HTML API (#50)
 
 ### 3.0.0 (Sep 18, 2026)
 

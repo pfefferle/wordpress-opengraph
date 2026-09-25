@@ -5,7 +5,7 @@
  * Description: Adds Open Graph metadata to your pages
  * Author: Will Norris & Matthias Pfefferle
  * Author URI: https://github.com/pfefferle/wordpress-opengraph
- * Version: 3.0.0
+ * Version: 3.0.1
  * License: Apache License, Version 2.0
  * License URI: https://www.apache.org/licenses/LICENSE-2.0.html
  * Requires at least: 6.2
@@ -371,6 +371,11 @@ function opengraph_thumbnail_image_ids( $post_id ) {
  * @return Generator<int> The attachment IDs.
  */
 function opengraph_content_image_ids( $post_id ) {
+	// ClassicPress does not ship the HTML API.
+	if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+		return;
+	}
+
 	$tags = new WP_HTML_Tag_Processor( get_post_field( 'post_content', $post_id, 'raw' ) );
 
 	while ( $tags->next_tag( 'img' ) ) {
