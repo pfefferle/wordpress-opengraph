@@ -371,6 +371,11 @@ function opengraph_thumbnail_image_ids( $post_id ) {
  * @return Generator<int> The attachment IDs.
  */
 function opengraph_content_image_ids( $post_id ) {
+	// ClassicPress does not ship the HTML API.
+	if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+		return;
+	}
+
 	$tags = new WP_HTML_Tag_Processor( get_post_field( 'post_content', $post_id, 'raw' ) );
 
 	while ( $tags->next_tag( 'img' ) ) {
