@@ -84,6 +84,10 @@ The plugin populates the meta 'name' attribute alongside the 'property' attribut
 
 Project maintained on github at [pfefferle/wordpress-opengraph](https://github.com/pfefferle/wordpress-opengraph).
 
+### Unreleased
+
+ - fixed a PHP warning on author archives combined with a category (#59)
+
 ### 3.0.1 (Sep 25, 2026)
 
  - fixed a fatal error on ClassicPress, which does not ship the HTML API (#50)
