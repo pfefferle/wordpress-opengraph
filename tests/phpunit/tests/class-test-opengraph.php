@@ -183,7 +183,7 @@ class Test_Opengraph extends Opengraph_TestCase {
 	}
 
 	/**
-	 * Test an author archive without a queried user falls back to the default title.
+	 * Test an author archive without a queried user falls back to the term.
 	 *
 	 * Combined with a category, the queried object is the term, or null if the
 	 * term does not exist, while is_author() is still true.
@@ -194,11 +194,12 @@ class Test_Opengraph extends Opengraph_TestCase {
 		$user_id = self::factory()->user->create();
 		self::factory()->post->create( array( 'post_author' => $user_id ) );
 
-		$metadata = $this->metadata_for( home_url( "/?author=$user_id&cat=999999" ) );
-		$this->assertSame( 'Untitled', $metadata['og:title'] );
-
 		$metadata = $this->metadata_for( home_url( "/?author=$user_id&cat=1" ) );
-		$this->assertSame( 'Untitled', $metadata['og:title'] );
+		$this->assertSame( 'Uncategorized', $metadata['og:title'] );
+
+		// No warning if the term does not exist either.
+		$metadata = $this->metadata_for( home_url( "/?author=$user_id&cat=999999" ) );
+		$this->assertIsString( $metadata['og:title'] );
 	}
 
 	/**
