@@ -216,9 +216,8 @@ function opengraph_default_title( $title ) {
 		if ( empty( $title ) ) {
 			$title = opengraph_default_description( null, 5 );
 		}
-	} elseif ( is_author() ) {
-		$author = get_queried_object();
-		$title  = $author->display_name;
+	} elseif ( is_author() && get_queried_object() instanceof WP_User ) {
+		$title = get_queried_object()->display_name;
 	} elseif ( ( is_category() || is_tag() ) && single_term_title( '', false ) ) {
 		$title = single_term_title( '', false );
 	} elseif ( is_archive() && get_post_format() ) {
