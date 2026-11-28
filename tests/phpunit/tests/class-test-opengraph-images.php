@@ -324,9 +324,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 		$this->assertSame( $this->image_url( $image_id ), $images[0] );
 		$this->assertSame( $images, array_unique( $images ) );
 
-		$five = function () {
-			return 5;
-		};
+		$five = fn() => 5;
 		add_filter( 'opengraph_max_images', $five );
 		$this->assertCount( 5, $this->images_for( $post_id ) );
 		remove_filter( 'opengraph_max_images', $five );
@@ -376,9 +374,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	public function test_default_image_is_capped() {
 		$post_id = $this->create_post( $this->image_block( $this->create_image() ) );
 
-		$prepend = function ( $image ) {
-			return array_merge( array( 'https://example.org/1.jpg', 'https://example.org/2.jpg', 'https://example.org/3.jpg', 'https://example.org/4.jpg' ), $image );
-		};
+		$prepend = fn( $image ) => array_merge( array( 'https://example.org/1.jpg', 'https://example.org/2.jpg', 'https://example.org/3.jpg', 'https://example.org/4.jpg' ), $image );
 
 		add_filter( 'opengraph_image', $prepend, 1 );
 		$images = $this->images_for( $post_id );
@@ -406,9 +402,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 			)
 		);
 
-		$prepend = function ( $image ) {
-			return array_merge( array( 'https://example.org/one.jpg', 'https://example.org/two.jpg' ), $image );
-		};
+		$prepend = fn( $image ) => array_merge( array( 'https://example.org/one.jpg', 'https://example.org/two.jpg' ), $image );
 
 		add_filter( 'opengraph_image', $prepend, 1 );
 		$images = $this->images_for( $post_id );
@@ -466,13 +460,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 
 		set_post_thumbnail( $post_id, $this->create_image() );
 
-		$sources = function () use ( $image_id ) {
-			return array(
-				function () use ( $image_id ) {
-					return array( $image_id );
-				},
-			);
-		};
+		$sources = fn() => array( fn() => array( $image_id ) );
 
 		add_filter( 'opengraph_image_sources', $sources );
 		$images = $this->images_for( $post_id );

@@ -44,9 +44,7 @@ function opengraph_add_prefix( $output ) {
 	$prefix_str = implode(
 		' ',
 		array_map(
-			function ( $k, $v ) {
-				return $k . ': ' . $v;
-			},
+			fn( $k, $v ) => $k . ': ' . $v,
 			array_keys( $prefixes ),
 			$prefixes
 		)
@@ -128,7 +126,7 @@ function opengraph_metadata() {
 		),
 	);
 
-	foreach ( $namespaces as $namespace => list( $filter_prefix, $properties ) ) {
+	foreach ( $namespaces as $namespace => [ $filter_prefix, $properties ] ) {
 		foreach ( $properties as $property => $default ) {
 			/**
 			 * Filter a single metadata property.
@@ -324,7 +322,7 @@ function opengraph_image_ids( $post_id, $limit ) {
 	$ids = array();
 
 	foreach ( $sources as $source ) {
-		foreach ( call_user_func( $source, $post_id ) as $id ) {
+		foreach ( $source( $post_id ) as $id ) {
 			$id = (int) $id;
 
 			// Skip duplicates and anything that is not an image attachment,
