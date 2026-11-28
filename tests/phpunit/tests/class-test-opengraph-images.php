@@ -39,6 +39,38 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	}
 
 	/**
+	 * Image block markup for a number of new images.
+	 *
+	 * @param int $count The number of images.
+	 *
+	 * @return string The markup.
+	 */
+	private function image_blocks( $count ) {
+		$content = '';
+
+		for ( $i = 0; $i < $count; $i++ ) {
+			$content .= $this->image_block( $this->create_image() );
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Get the Open Graph metadata of a post without the loop globals.
+	 *
+	 * @param int $post_id The post ID.
+	 *
+	 * @return array The metadata.
+	 */
+	private function metadata_without_loop_globals( $post_id ) {
+		$this->go_to( get_permalink( $post_id ) );
+		$GLOBALS['pages'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$GLOBALS['post']  = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+
+		return opengraph_metadata();
+	}
+
+	/**
 	 * Test the post thumbnail comes first, followed by content and attached images.
 	 *
 	 * @covers ::opengraph_default_image
@@ -48,18 +80,12 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	 * @covers ::opengraph_attached_image_ids
 	 */
 	public function test_image_order() {
-		$post_id      = $this->create_post();
 		$thumbnail_id = $this->create_image();
 		$content_id   = $this->create_image();
+		$post_id      = $this->create_post( $this->image_block( $content_id ) );
 		$attached_id  = $this->create_image( $post_id );
 
 		set_post_thumbnail( $post_id, $thumbnail_id );
-		wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_content' => $this->image_block( $content_id ),
-			)
-		);
 
 		$this->assertSame(
 			array(
@@ -231,11 +257,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 		$image_id = $this->create_image();
 		$post_id  = $this->create_post( $this->image_block( $image_id ) );
 
-		$this->go_to( get_permalink( $post_id ) );
-		$GLOBALS['pages'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$GLOBALS['post']  = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-
-		$metadata = opengraph_metadata();
+		$metadata = $this->metadata_without_loop_globals( $post_id );
 
 		$this->assertSame( array( $this->image_url( $image_id ) ), $metadata['og:image'] );
 
@@ -246,11 +268,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 				'post_password' => 'secret',
 			)
 		);
-		$this->go_to( get_permalink( $post_id ) );
-		$GLOBALS['pages'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$GLOBALS['post']  = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-
-		$metadata = opengraph_metadata();
+		$metadata = $this->metadata_without_loop_globals( $post_id );
 
 		$this->assertSame( array(), $metadata['og:image'] );
 	}
@@ -303,21 +321,11 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	 * @covers ::opengraph_max_images
 	 */
 	public function test_max_images() {
-		$post_id  = $this->create_post();
 		$image_id = $this->create_image();
-		$content  = $this->image_block( $image_id ); // Same as the thumbnail, should not count.
-
-		for ( $i = 0; $i < 5; $i++ ) {
-			$content .= $this->image_block( $this->create_image() );
-		}
+		// The first content image is the thumbnail, so it should not count twice.
+		$post_id = $this->create_post( $this->image_block( $image_id ) . $this->image_blocks( 5 ) );
 
 		set_post_thumbnail( $post_id, $image_id );
-		wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_content' => $content,
-			)
-		);
 
 		$images = $this->images_for( $post_id );
 		$this->assertCount( 3, $images );
@@ -341,25 +349,11 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	 * @covers ::opengraph_image_ids
 	 */
 	public function test_unusable_ids_do_not_count() {
-		$post_id = $this->create_post();
-		$file_id = self::factory()->attachment->create_object(
-			array(
-				'file'           => 'document.pdf',
-				'post_mime_type' => 'application/pdf',
-			)
-		);
-		$content = '<img class="wp-image-999999"/><img class="wp-image-' . $file_id . '"/>';
-		$ids     = array();
-
-		for ( $i = 0; $i < 3; $i++ ) {
-			$ids[]    = $this->create_image();
-			$content .= $this->image_block( end( $ids ) );
-		}
-		wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_content' => $content,
-			)
+		$file_id = $this->create_file( 'document.pdf', 'application/pdf' );
+		$ids     = array( $this->create_image(), $this->create_image(), $this->create_image() );
+		$post_id = $this->create_post(
+			'<img class="wp-image-999999"/><img class="wp-image-' . $file_id . '"/>' .
+			implode( '', array_map( array( $this, 'image_block' ), $ids ) )
 		);
 
 		$this->assertSame( array_map( array( $this, 'image_url' ), $ids ), $this->images_for( $post_id ) );
@@ -378,7 +372,6 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 
 		add_filter( 'opengraph_image', $prepend, 1 );
 		$images = $this->images_for( $post_id );
-		remove_filter( 'opengraph_image', $prepend, 1 );
 
 		$this->assertSame( array( 'https://example.org/1.jpg', 'https://example.org/2.jpg', 'https://example.org/3.jpg' ), $images );
 	}
@@ -389,24 +382,12 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	 * @covers ::opengraph_default_image
 	 */
 	public function test_limit_includes_earlier_images() {
-		$post_id = $this->create_post();
-		$content = '';
-
-		for ( $i = 0; $i < 3; $i++ ) {
-			$content .= $this->image_block( $this->create_image() );
-		}
-		wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_content' => $content,
-			)
-		);
+		$post_id = $this->create_post( $this->image_blocks( 3 ) );
 
 		$prepend = fn( $image ) => array_merge( array( 'https://example.org/one.jpg', 'https://example.org/two.jpg' ), $image );
 
 		add_filter( 'opengraph_image', $prepend, 1 );
 		$images = $this->images_for( $post_id );
-		remove_filter( 'opengraph_image', $prepend, 1 );
 
 		$this->assertCount( 3, $images );
 		$this->assertSame( 'https://example.org/one.jpg', $images[0] );
@@ -418,18 +399,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 	 * @covers ::opengraph_image_ids
 	 */
 	public function test_sources_stop_when_full() {
-		$post_id = $this->create_post();
-		$content = '';
-
-		for ( $i = 0; $i < 3; $i++ ) {
-			$content .= $this->image_block( $this->create_image() );
-		}
-		wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_content' => $content,
-			)
-		);
+		$post_id = $this->create_post( $this->image_blocks( 3 ) );
 
 		$called  = false;
 		$sources = function ( $sources ) use ( &$called ) {
@@ -444,7 +414,6 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 
 		add_filter( 'opengraph_image_sources', $sources );
 		$this->assertCount( 3, $this->images_for( $post_id ) );
-		remove_filter( 'opengraph_image_sources', $sources );
 
 		$this->assertFalse( $called );
 	}
@@ -464,7 +433,6 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 
 		add_filter( 'opengraph_image_sources', $sources );
 		$images = $this->images_for( $post_id );
-		remove_filter( 'opengraph_image_sources', $sources );
 
 		$this->assertSame( array( $this->image_url( $image_id ) ), $images );
 	}
@@ -507,12 +475,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 		$image_id = $this->create_image();
 		$this->assertSame( array( $this->image_url( $image_id ) ), $this->images_for( $image_id ) );
 
-		$file_id = self::factory()->attachment->create_object(
-			array(
-				'file'           => 'document.pdf',
-				'post_mime_type' => 'application/pdf',
-			)
-		);
+		$file_id = $this->create_file( 'document.pdf', 'application/pdf' );
 		$this->assertSame( array(), $this->images_for( $file_id ) );
 	}
 
@@ -526,11 +489,9 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 
 		update_option( 'site_icon', $this->create_image() );
 		$expected = get_site_icon_url( 512 );
-		$images   = $this->images_for( $post_id );
-		delete_option( 'site_icon' );
 
 		$this->assertNotEmpty( $expected );
-		$this->assertSame( array( $expected ), $images );
+		$this->assertSame( array( $expected ), $this->images_for( $post_id ) );
 	}
 
 	/**
@@ -543,10 +504,8 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 		$logo_id = $this->create_image();
 
 		set_theme_mod( 'custom_logo', $logo_id );
-		$images = $this->images_for( $post_id );
-		remove_theme_mod( 'custom_logo' );
 
-		$this->assertSame( array( $this->image_url( $logo_id ) ), $images );
+		$this->assertSame( array( $this->image_url( $logo_id ) ), $this->images_for( $post_id ) );
 	}
 
 	/**
@@ -559,9 +518,7 @@ class Test_Opengraph_Images extends Opengraph_TestCase {
 		$post_id  = $this->create_post( $this->image_block( $image_id ) );
 
 		update_option( 'site_icon', $this->create_image() );
-		$images = $this->images_for( $post_id );
-		delete_option( 'site_icon' );
 
-		$this->assertSame( array( $this->image_url( $image_id ) ), $images );
+		$this->assertSame( array( $this->image_url( $image_id ) ), $this->images_for( $post_id ) );
 	}
 }
