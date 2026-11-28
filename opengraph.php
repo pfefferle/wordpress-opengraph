@@ -44,9 +44,7 @@ function opengraph_add_prefix( $output ) {
 	$prefix_str = implode(
 		' ',
 		array_map(
-			function ( $k, $v ) {
-				return $k . ': ' . $v;
-			},
+			fn( $k, $v ) => $k . ': ' . $v,
 			array_keys( $prefixes ),
 			$prefixes
 		)
@@ -128,7 +126,7 @@ function opengraph_metadata() {
 		),
 	);
 
-	foreach ( $namespaces as $namespace => list( $filter_prefix, $properties ) ) {
+	foreach ( $namespaces as $namespace => [ $filter_prefix, $properties ] ) {
 		foreach ( $properties as $property => $default ) {
 			/**
 			 * Filter a single metadata property.
@@ -238,17 +236,19 @@ function opengraph_default_title( $title ) {
  * @return string The type.
  */
 function opengraph_default_type( $type = '' ) {
-	if ( empty( $type ) ) {
-		if ( is_singular( array( 'post', 'page' ) ) ) {
-			$type = 'article';
-		} elseif ( is_author() ) {
-			$type = 'profile';
-		} else {
-			$type = 'website';
-		}
+	if ( $type ) {
+		return $type;
 	}
 
-	return $type;
+	if ( is_singular( array( 'post', 'page' ) ) ) {
+		return 'article';
+	}
+
+	if ( is_author() ) {
+		return 'profile';
+	}
+
+	return 'website';
 }
 
 
@@ -324,7 +324,7 @@ function opengraph_image_ids( $post_id, $limit ) {
 	$ids = array();
 
 	foreach ( $sources as $source ) {
-		foreach ( call_user_func( $source, $post_id ) as $id ) {
+		foreach ( $source( $post_id ) as $id ) {
 			$id = (int) $id;
 
 			// Skip duplicates and anything that is not an image attachment,
@@ -430,25 +430,27 @@ function opengraph_image_tag_to_id( $tags ) {
  */
 function opengraph_attachment_url_to_id( $src ) {
 	$img_id = attachment_url_to_postid( $src );
-
-	if ( 0 === $img_id ) {
-		$src    = strtok( $src, '?' );
-		$img_id = attachment_url_to_postid( $src );
+	if ( $img_id ) {
+		return $img_id;
 	}
 
-	if ( 0 === $img_id ) {
-		$src = preg_replace( '/-(?:\d+x\d+)(\.[a-zA-Z]+)$/', '$1', $src, 1, $count );
-		if ( $count > 0 ) {
-			$img_id = attachment_url_to_postid( $src );
+	if ( str_contains( $src, '?' ) ) {
+		$src    = strtok( $src, '?' );
+		$img_id = attachment_url_to_postid( $src );
+		if ( $img_id ) {
+			return $img_id;
 		}
 	}
 
-	if ( 0 === $img_id ) {
-		$src    = preg_replace( '/(\.[a-zA-Z]+)$/', '-scaled$1', $src );
+	$src = preg_replace( '/-(?:\d+x\d+)(\.[a-zA-Z]+)$/', '$1', $src, 1, $count );
+	if ( $count > 0 ) {
 		$img_id = attachment_url_to_postid( $src );
+		if ( $img_id ) {
+			return $img_id;
+		}
 	}
 
-	return $img_id;
+	return attachment_url_to_postid( preg_replace( '/(\.[a-zA-Z]+)$/', '-scaled$1', $src ) );
 }
 
 
@@ -470,6 +472,7 @@ function opengraph_attached_image_ids( $post_id ) {
 			'order'          => 'ASC',
 			'orderby'        => 'menu_order ID',
 			'posts_per_page' => opengraph_max_images(),
+			'no_found_rows'  => true,
 		)
 	);
 
@@ -488,36 +491,26 @@ function opengraph_fallback_image( $image = array() ) {
 		return $image;
 	}
 
-	$max_images = opengraph_max_images();
-
 	// Try site icon.
-	if ( has_site_icon() ) {
-		$image[] = get_site_icon_url( 512 );
+	$site_icon = get_site_icon_url( 512 );
+	if ( $site_icon ) {
+		return array( $site_icon );
 	}
 
 	// Try custom logo second.
-	if ( empty( $image ) ) {
-		$custom_logo = wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'large' );
-		if ( $custom_logo ) {
-			$image[] = $custom_logo;
-		}
+	$custom_logo = wp_get_attachment_image_url( get_theme_mod( 'custom_logo' ), 'large' );
+	if ( $custom_logo ) {
+		return array( $custom_logo );
 	}
 
 	// Try header images.
-	if ( empty( $image ) ) {
-		if ( is_random_header_image() ) {
-			foreach ( get_uploaded_header_images() as $header_image ) {
-				$image[] = $header_image['url'];
-				if ( count( $image ) >= $max_images ) {
-					break;
-				}
-			}
-		} elseif ( get_header_image() ) {
-			$image[] = get_header_image();
-		}
+	if ( is_random_header_image() ) {
+		return array_unique( array_slice( array_column( get_uploaded_header_images(), 'url' ), 0, opengraph_max_images() ) );
 	}
 
-	return array_unique( $image );
+	$header_image = get_header_image();
+
+	return $header_image ? array( $header_image ) : array();
 }
 
 /**
@@ -625,8 +618,7 @@ function opengraph_default_description( $description = '', $length = 55 ) {
 			$description = opengraph_page_teaser( $post );
 		}
 	} elseif ( is_author() ) {
-		$id          = get_queried_object_id();
-		$description = get_user_meta( $id, 'description', true );
+		$description = get_user_meta( get_queried_object_id(), 'description', true );
 	} elseif ( ( is_category() || is_tag() ) && term_description() ) {
 		$description = term_description();
 	} elseif ( is_archive() && get_the_archive_description() ) {
@@ -672,11 +664,7 @@ function opengraph_page_teaser( $post ) {
  * @return string The locale.
  */
 function opengraph_default_locale( $locale = '' ) {
-	if ( empty( $locale ) ) {
-		$locale = get_locale();
-	}
-
-	return $locale;
+	return $locale ? $locale : get_locale();
 }
 
 
@@ -698,11 +686,7 @@ function twitter_default_card( $card = '', $metadata = array() ) {
 		return $card;
 	}
 
-	if ( ! is_singular() || empty( $metadata['og:image'] ) ) {
-		return 'summary';
-	}
-
-	if ( opengraph_fallback_image() === $metadata['og:image'] ) {
+	if ( ! is_singular() || empty( $metadata['og:image'] ) || opengraph_fallback_image() === $metadata['og:image'] ) {
 		return 'summary';
 	}
 
@@ -742,14 +726,10 @@ function twitter_default_creator( $creator = '' ) {
 
 	$twitter = opengraph_queried_author_meta( 'twitter' );
 
-	if ( ! $twitter ) {
-		return $creator;
-	}
-
 	// Check if twitter-account matches "http://twitter.com/username".
 	if ( preg_match( '/^http:\/\/twitter\.com\/(#!\/)?(\w+)/i', $twitter, $matches ) ) {
 		$creator = '@' . $matches[2];
-	} elseif ( preg_match( '/^@?(\w+)$/i', $twitter, $matches ) ) { // Check if twitter-account matches "(@)username".
+	} elseif ( preg_match( '/^@?(\w+)$/', $twitter, $matches ) ) { // Check if twitter-account matches "(@)username".
 		$creator = '@' . $matches[1];
 	}
 

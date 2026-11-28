@@ -22,6 +22,25 @@ abstract class Opengraph_TestCase extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Create a non-image attachment.
+	 *
+	 * @param string $file      The file name.
+	 * @param string $mime_type The mime type.
+	 * @param int    $parent_id The post to attach the file to.
+	 *
+	 * @return int The attachment ID.
+	 */
+	protected function create_file( $file, $mime_type, $parent_id = 0 ) {
+		return self::factory()->attachment->create_object(
+			array(
+				'file'           => $file,
+				'post_parent'    => $parent_id,
+				'post_mime_type' => $mime_type,
+			)
+		);
+	}
+
+	/**
 	 * Get the Open Graph metadata for a URL.
 	 *
 	 * @param string $url The URL to go to.

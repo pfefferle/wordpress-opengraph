@@ -236,8 +236,6 @@ class Test_Opengraph extends Opengraph_TestCase {
 		set_post_thumbnail( $post_id, $this->create_image() );
 		$metadata = $this->metadata_for( get_permalink( $post_id ) );
 		$this->assertSame( 'summary_large_image', $metadata['twitter:card'] );
-
-		delete_option( 'site_icon' );
 	}
 
 	/**
@@ -250,8 +248,6 @@ class Test_Opengraph extends Opengraph_TestCase {
 
 		$post_id  = self::factory()->post->create();
 		$metadata = $this->metadata_for( get_permalink( $post_id ) );
-
-		remove_theme_mod( 'custom_logo' );
 
 		$this->assertCount( 1, $metadata['og:image'] );
 		$this->assertSame( 'summary', $metadata['twitter:card'] );
@@ -270,8 +266,6 @@ class Test_Opengraph extends Opengraph_TestCase {
 
 		$post_id  = self::factory()->post->create();
 		$metadata = $this->metadata_for( get_permalink( $post_id ) );
-
-		remove_theme_mod( 'header_image' );
 
 		$this->assertCount( 2, $metadata['og:image'] );
 		$this->assertSame( 'summary', $metadata['twitter:card'] );
@@ -294,7 +288,6 @@ class Test_Opengraph extends Opengraph_TestCase {
 
 		add_filter( 'twitter_creator', $callback, 10, 2 );
 		$this->metadata_for( get_permalink( $post_id ) );
-		remove_filter( 'twitter_creator', $callback, 10 );
 
 		$this->assertSame( 'Hello', $received['og:title'] );
 		$this->assertSame( 'summary', $received['twitter:card'] );
@@ -359,7 +352,6 @@ class Test_Opengraph extends Opengraph_TestCase {
 
 		add_filter( 'opengraph_metadata', $custom, 5 );
 		$metadata = $this->metadata_for( get_permalink( $post_id ) );
-		remove_filter( 'opengraph_metadata', $custom, 5 );
 
 		$this->assertEqualSets( array( 'custom', 'foo', 'bar' ), $metadata['article:tag'] );
 	}
@@ -373,20 +365,8 @@ class Test_Opengraph extends Opengraph_TestCase {
 	 */
 	public function test_audio_and_video() {
 		$post_id  = self::factory()->post->create();
-		$audio_id = self::factory()->attachment->create_object(
-			array(
-				'file'           => 'song.mp3',
-				'post_parent'    => $post_id,
-				'post_mime_type' => 'audio/mpeg',
-			)
-		);
-		$video_id = self::factory()->attachment->create_object(
-			array(
-				'file'           => 'clip.mp4',
-				'post_parent'    => $post_id,
-				'post_mime_type' => 'video/mp4',
-			)
-		);
+		$audio_id = $this->create_file( 'song.mp3', 'audio/mpeg', $post_id );
+		$video_id = $this->create_file( 'clip.mp4', 'video/mp4', $post_id );
 
 		$metadata = $this->metadata_for( get_permalink( $post_id ) );
 		$this->assertSame( array( wp_get_attachment_url( $audio_id ) ), $metadata['og:audio'] );
